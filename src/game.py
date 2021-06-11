@@ -1,9 +1,10 @@
 import pygame
 import pygame_menu
-import os
 import sys
 import random
+import high_score
 import menu
+import pygame.freetype
 from pygame.locals import *
 
 GAME_SCREEN_HEIGHT = 600
@@ -16,8 +17,7 @@ Game_FramePerSec = pygame.time.Clock()
 class Enemy(pygame.sprite.Sprite):
       def __init__(self):
         super().__init__()
-        #path = os.path.abspath("enemy.png") 
-        self.image = pygame.image.load("./img/enemy.png")
+        self.image = pygame.image.load("./assets/enemy.png")
         self.surf = pygame.Surface((50, 80))
         self.rect = self.surf.get_rect(center = (random.randint(40, GAME_SCREEN_WIDTH-40), 0))     
  
@@ -28,8 +28,7 @@ class Enemy(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        #path2 = os.path.abspath('./img/download.png') 
-        self.image = pygame.image.load("./img/download.png")
+        self.image = pygame.image.load("./assets/download.png")
         self.surf = pygame.Surface((50, 100))
         self.rect = self.surf.get_rect(center = (150, 500))
  
@@ -43,6 +42,13 @@ class Player(pygame.sprite.Sprite):
               if pressed_keys[K_RIGHT]:
                   self.rect.move_ip(GAME_SPEED, 0)
 
+def score_draw(dispsurf, current_score):
+    pygame.freetype.init()
+    myfont = pygame.freetype.Font("./assets/Premier2019-rPv9.ttf", 24.0)
+    textsurface = myfont.render("Score: "+str(current_score), (0, 0, 0))
+    dispsurf.blit(textsurface[0], (0,0))
+    pygame.display.flip()
+
 def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH):
 
     BLUE  = (0, 0, 255)
@@ -52,6 +58,7 @@ def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH):
     WHITE = (255, 255, 255)
 
     random_spawn_time = 1000
+    running_score = 0
 
     DISPLAYSURF.fill(WHITE)
     pygame.display.set_caption("Game")
@@ -59,7 +66,6 @@ def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH):
     P1 = Player()
 
     enemies = pygame.sprite.Group()
-
     all_sprites = pygame.sprite.Group()
     all_sprites.add(P1)
 
@@ -82,34 +88,27 @@ def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH):
                     enemies.add(new_enemy)
                     all_sprites.add(new_enemy)
 
-            elif event.type == QUIT: #Add scoring (score based on how many cars passed)
-                pygame.quit()
+            elif event.type == QUIT: 
+                pygame.quit() #Look at making executable standalone (py2exe)
                 sys.exit()
 
         DISPLAYSURF.fill(WHITE)
+        score_draw(DISPLAYSURF, running_score)
 
         for entity in all_sprites:
             DISPLAYSURF.blit(entity.image, entity.rect)
-            entity.move()
-            check = 0
-            list_of_enemies = enemies.sprites()
-            for sprite in list_of_enemies:
-                if (entity == sprite):
-                    check = 1
-                else:
-                    check = 0
-
+            entity.move()           
             if (entity.rect.bottom > SCREEN_HEIGHT):
-                if (check == 1):
-                    enemies.remove(entity)
-
+                running_score+=1
                 all_sprites.remove(entity)
                 entity.kill()
 
     
         #To be run if collision occurs between Player and Enemy
         if pygame.sprite.spritecollideany(P1, enemies):
-            menu.last_menu(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH)
+            if (high_score.check_scores(running_score) == True):
+                menu.high_score_menu(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH, running_score) #Issue lies here
+            #menu.last_menu(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH)
 
         pygame.display.update()
         FramePerSec.tick(FPS)
