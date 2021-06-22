@@ -6,6 +6,7 @@ import high_score
 import menu
 import pygame.freetype
 from pygame.locals import *
+from pygame_menu.locals import *
 
 GAME_SCREEN_HEIGHT = 600
 GAME_SCREEN_WIDTH = 400
@@ -13,6 +14,9 @@ GAME_SPEED = 5
 
 GAME_FPS = 60
 Game_FramePerSec = pygame.time.Clock()
+
+TotalScore = 0
+first_time_check = 0
 
 class Enemy(pygame.sprite.Sprite):
       def __init__(self):
@@ -49,7 +53,7 @@ def score_draw(dispsurf, current_score):
     dispsurf.blit(textsurface[0], (0,0))
     pygame.display.flip()
 
-def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH):
+def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH, running_score):
 
     BLUE  = (0, 0, 255)
     RED   = (255, 0, 0)
@@ -58,10 +62,11 @@ def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH):
     WHITE = (255, 255, 255)
 
     random_spawn_time = 1000
-    running_score = 0
 
     DISPLAYSURF.fill(WHITE)
     pygame.display.set_caption("Game")
+
+    running_score = 0
 
     P1 = Player()
 
@@ -74,7 +79,6 @@ def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH):
 
     SPAWN_ENEMY = pygame.USEREVENT + 2
     pygame.time.set_timer(SPAWN_ENEMY, random_spawn_time)
-
 
     while True:     
         for event in pygame.event.get():
@@ -107,8 +111,9 @@ def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH):
         #To be run if collision occurs between Player and Enemy
         if pygame.sprite.spritecollideany(P1, enemies):
             if (high_score.check_scores(running_score) == True):
-                menu.high_score_menu(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH, running_score) #Issue lies here
-            #menu.last_menu(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH)
+                menu.high_score_menu(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH, running_score, 0)
+            else:
+                menu.last_menu(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH)
 
         pygame.display.update()
         FramePerSec.tick(FPS)
