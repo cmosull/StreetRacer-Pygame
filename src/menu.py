@@ -5,6 +5,8 @@ def player_add_name(value):
     if (game.first_time_check == 0):
         game.high_score.add_name(value.upper())
 
+###################################################################################################################################################################################
+
 def first_menu(STILLDISPLAYSURF, STILL_FPS, Still_FramePerSec, STILL_SCREEN_HEIGHT, STILL_SCREEN_WIDTH):
     game.first_time_check = 0
     main_menu = game.pygame_menu.menu.Menu("Street Racer", STILL_SCREEN_WIDTH, STILL_SCREEN_HEIGHT)
@@ -50,7 +52,10 @@ def high_score_menu(TopDispSurf, TOTAL_FPS, Total_FramePerSec, TOTAL_SCREEN_HEIG
     hs_menu.add.button("Update High Scores", high_score_menu, TopDispSurf, TOTAL_FPS, Total_FramePerSec, TOTAL_SCREEN_HEIGHT, TOTAL_SCREEN_WIDTH, final_score, 1, font_size=24)
     hs_menu.add.label("",font_size=12)
     Back_To_Main = hs_menu.add.button("Back to Main Menu", first_menu, TopDispSurf, TOTAL_FPS, Total_FramePerSec, TOTAL_SCREEN_HEIGHT, TOTAL_SCREEN_WIDTH, font_size=24)
+
     hs_menu.mainloop(TopDispSurf)
+
+###################################################################################################################################################################################
 
 def high_score_view_menu(AnotherDispSurf, TOTAL_FPS, Total_FramePerSec, TOTAL_SCREEN_HEIGHT, TOTAL_SCREEN_WIDTH):
     hs_view_menu = game.pygame_menu.menu.Menu("Street Racer", TOTAL_SCREEN_WIDTH, TOTAL_SCREEN_HEIGHT)
@@ -62,5 +67,6 @@ def high_score_view_menu(AnotherDispSurf, TOTAL_FPS, Total_FramePerSec, TOTAL_SC
         table.add_row(row, cell_font = game.pygame_menu.font.FONT_OPEN_SANS_BOLD)
     
     Back_To_Main = hs_view_menu.add.button("Back to Main Menu", first_menu, AnotherDispSurf, TOTAL_FPS, Total_FramePerSec, TOTAL_SCREEN_HEIGHT, TOTAL_SCREEN_WIDTH)
+    
     hs_view_menu.mainloop(AnotherDispSurf)
 

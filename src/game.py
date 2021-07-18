@@ -61,7 +61,8 @@ def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH, runni
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
 
-    random_spawn_time = 1000
+    spawn_time = 1000
+    enemy_counter = 0
 
     DISPLAYSURF.fill(WHITE)
     pygame.display.set_caption("Game")
@@ -78,19 +79,33 @@ def start_game(DISPLAYSURF, FPS, FramePerSec, SCREEN_HEIGHT, SCREEN_WIDTH, runni
     #pygame.time.set_timer(INC_SPEED, 1000)
 
     SPAWN_ENEMY = pygame.USEREVENT + 2
-    pygame.time.set_timer(SPAWN_ENEMY, random_spawn_time)
+    pygame.time.set_timer(SPAWN_ENEMY, spawn_time)
 
     while True:     
         for event in pygame.event.get():
             if event.type == SPAWN_ENEMY:
-                random_spawn_time = random.randint(400,1200)  #Possibly increase difficulty, increase speed or increase amount spawning
-                #num_of_enemies = random.randint(1,3)
-                num_of_enemies = 1
+                #random_spawn_time = random.randint(400,1200)  #Possibly increase difficulty, increase speed or increase amount spawning
+                if (enemy_counter % 15 == 0 and enemy_counter != 0):
+                    print(enemy_counter)
+                    spawn_time -= 100
+                    print(spawn_time)
+                    pygame.time.set_timer(SPAWN_ENEMY, spawn_time)
+
+                if (enemy_counter < 30 ):
+                    num_of_enemies = 1
+                elif(enemy_counter >= 30 and enemy_counter < 60):
+                    num_of_enemies = random.randint(1,3) 
+                elif(enemy_counter >= 60 and enemy_counter < 90):
+                    num_of_enemies = random.randint(2,4)
+                else:
+                    num_of_enemies = random.randint(3,5)
+                
                 enemy_list = [None] * num_of_enemies #Add variable difficulty? Either menu option or increase over time? Both?
                 for new_enemy in enemy_list:
                     new_enemy = Enemy()
                     enemies.add(new_enemy)
                     all_sprites.add(new_enemy)
+                    enemy_counter += 1
 
             elif event.type == QUIT: 
                 pygame.quit() #Look at making executable standalone (py2exe)
